@@ -9,15 +9,23 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jfk.algorithms.sudoku.model.Sudoku;
 import jfk.algorithms.sudoku.model.SudokuSolver;
@@ -25,37 +33,23 @@ import jfk.algorithms.sudoku.model.SudokuSolver;
 public class SudokuSolverWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-
+	private static SudokuSolverWindow window;
+	
 	public static void main(String[] args) {
 		Runnable runner = new Runnable() {
 			public void run() {
-				SudokuSolverWindow window = new SudokuSolverWindow();
-				window.setTitle("Sudoku solver");
-				//window.setSize(900, 900);
-
-//				 window.getRootPane().add(menuBar, BorderLayout.NORTH);
-
+				window = new SudokuSolverWindow();
+				window.setTitle("JSudoku solver");
 				window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 				SudokuSolverPanel panel = new SudokuSolverPanel();
 				panel.setSudoku(new Sudoku());
 				window.add(panel);
-				
 
-				JMenuBar menuBar = createMenuBar(panel);
-				window.setJMenuBar(menuBar);
+				window.setJMenuBar(createMenuBar(panel));
 				window.setVisible(true);
 				window.setResizable(false);
 				window.pack();
-				KeyListener keyAdapter = new KeyAdapter() {
-					public void keyPressed(KeyEvent evt) {
-						if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
-							System.exit(0);
-						}
-					}
-				};
-				window.addKeyListener(keyAdapter);
-
 			}
 
 			private JMenuBar createMenuBar(SudokuSolverPanel panel) {
@@ -66,13 +60,13 @@ public class SudokuSolverWindow extends JFrame {
 
 						switch (e.getActionCommand()) {
 						case "Open":
-							
+							openSudoku();
 							break;
 							
 							case "Save":
 							
 							break;
-						case "Close":
+						case "Exit":
 							System.exit(0);
 							break;
 						case "New":
@@ -95,6 +89,45 @@ public class SudokuSolverWindow extends JFrame {
 						
 						}
 					}
+
+					private void openSudoku() {
+						JFileChooser fileChooser = new JFileChooser();
+						fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+						fileChooser.setAcceptAllFileFilterUsed(false);
+						fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSudoku files", "jsudoku"));
+						int result = fileChooser.showOpenDialog(window);
+						if (result == JFileChooser.APPROVE_OPTION) {
+						    File selectedFile = fileChooser.getSelectedFile();
+						    try {
+						    int[][] values = fileToValues(selectedFile);
+						    panel.getSudoku().setValues(values);
+						    panel.repaint();
+						    }
+						    catch(Exception ex) {
+						    	JOptionPane.showMessageDialog(window, "Error opening file '" + selectedFile.getAbsolutePath() + "'. Error was: " + ex.getMessage());
+						    }
+						}
+						
+					}
+
+					private int[][] fileToValues(File selectedFile) throws IOException {
+						int[][] values = new int[9][];
+						String content = Files.readString(Path.of(selectedFile.getAbsolutePath()));
+						String lines[] = content.split("\\r?\\n");
+						for(int lineCounter = 0; lineCounter < 9; lineCounter++) {
+							values[lineCounter] = new int[9];
+						}
+						for(int lineCounter = 0; lineCounter < 9; lineCounter++) {
+							for(int charCounter = 0; charCounter<9; charCounter++) {
+								String valueString = lines[lineCounter].substring(charCounter, charCounter+1);
+								if(valueString.equals(".")) {valueString = "0";}
+								values[charCounter][lineCounter] = Integer.parseInt(valueString);
+							}
+						}
+						
+						
+						return values;
+					}
 				};
 
 				// window.getRootPane().setLayout(new BorderLayout());
@@ -114,9 +147,9 @@ public class SudokuSolverWindow extends JFrame {
 				menuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 				menuItemFiles.add(menuItemSave);
 
-				JMenuItem menuItemClose = new JMenuItem("Close");
+				JMenuItem menuItemClose = new JMenuItem("Exit");
 				menuItemClose.addActionListener(listener);
-				menuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+				menuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 				menuItemFiles.add(menuItemClose);
 
 				JMenu menuItemSudoku = new JMenu("Sudoku");
