@@ -26,6 +26,7 @@ public class SudokuSolverWindow extends JFrame {
 				window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); 
 				window.pack();
 				window.setVisible(true);
+				window.setResizable(false);
 				
 				KeyListener keyAdapter=new KeyAdapter()
 				 {
