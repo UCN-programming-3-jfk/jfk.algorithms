@@ -1,4 +1,6 @@
-package jfk.algorithms.sudoku.model;
+package jfk.algorithms.sudoku.controller;
+
+import jfk.algorithms.sudoku.model.Sudoku;
 
 public class SudokuSolver {
 
@@ -53,6 +55,38 @@ public class SudokuSolver {
 		
 		return false;
 
+	}
+	
+	static int getNumberOfSolutions(Sudoku sudoku) {
+
+		SudokuSolver solver = new SudokuSolver(sudoku);
+		return solver.getNumberOfSolutions(0);
+	}
+	
+	private int getNumberOfSolutions(int valueIndex) {
+		
+		if(valueIndex == 81) {return 1;}
+		
+		int x = valueIndex % 9;
+		int y = valueIndex / 9;
+		
+		if(getSudoku().getValues()[x][y] != 0) {
+			return getNumberOfSolutions(valueIndex+1);
+		}
+		
+		for(int valueToTry = 1; valueToTry<= 9; valueToTry++) {
+			System.out.println("Index:" + valueIndex + " - trying value: " + valueToTry + " at x:" + x + ", y:" + y + "");
+			getSudoku().getValues()[x][y] = valueToTry;
+			if(getSudoku().isValid()){
+				int solutions = getNumberOfSolutions(valueIndex + 1);
+				if(solutions > 0) {
+					return solutions;
+				}
+			}
+		}
+		getSudoku().getValues()[x][y] = 0;
+		
+		return 0;
 	}
 	
 	

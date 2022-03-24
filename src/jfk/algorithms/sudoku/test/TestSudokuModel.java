@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import jfk.algorithms.sudoku.controller.SudokuSolver;
 import jfk.algorithms.sudoku.model.Sudoku;
-import jfk.algorithms.sudoku.model.SudokuSolver;
 
 class TestSudokuModel {
 

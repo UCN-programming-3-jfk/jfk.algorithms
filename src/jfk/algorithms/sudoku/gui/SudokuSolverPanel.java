@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import jfk.algorithms.sudoku.controller.SudokuSolver;
 import jfk.algorithms.sudoku.model.*;
 
 public class SudokuSolverPanel extends JPanel {
@@ -22,24 +23,23 @@ public class SudokuSolverPanel extends JPanel {
 		float f = 55.0f;
 		g.setFont(g.getFont().deriveFont(f));
 		int tileSize = getWidth() / 9;
-		
+
 		markErrorsIfAny(g, tileSize);
 
-		
 		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {
 			for (int columnCounter = 0; columnCounter < 9; columnCounter++) {
 				g.setColor(Color.black);
-				
+
 				if (getSudoku().isLocked(columnCounter, rowCounter)) {
 					g.setColor(Color.black);
 					g.fillRect(columnCounter * tileSize, rowCounter * tileSize, tileSize, tileSize);
 					g.setColor(Color.white);
 				}
-				
+
 				g.drawRect(columnCounter * tileSize, rowCounter * tileSize, tileSize, tileSize);
 				if (getSudoku().getValues()[columnCounter][rowCounter] != 0) {
 					g.drawString(getSudoku().getValues()[columnCounter][rowCounter] + "",
-							columnCounter * tileSize + tileSize / 3, rowCounter * tileSize + tileSize - tileSize/4);
+							columnCounter * tileSize + tileSize / 3, rowCounter * tileSize + tileSize - tileSize / 4);
 				}
 			}
 		}
@@ -61,22 +61,23 @@ public class SudokuSolverPanel extends JPanel {
 
 	private void markErrorsIfAny(Graphics g, int tileSize) {
 		g.setColor(Color.yellow);
-		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {			
-			if(!getSudoku().isRowValid(rowCounter)) {
-				g.fillRect(0, rowCounter * tileSize, tileSize*9, tileSize);
+		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {
+			if (!getSudoku().isRowValid(rowCounter)) {
+				g.fillRect(0, rowCounter * tileSize, tileSize * 9, tileSize);
 			}
 		}
 
-		for (int columnCounter = 0; columnCounter < 9; columnCounter++) {			
-			if(!getSudoku().isColumnValid(columnCounter)) {
-				g.fillRect(columnCounter * tileSize, 0, tileSize, tileSize*9);
+		for (int columnCounter = 0; columnCounter < 9; columnCounter++) {
+			if (!getSudoku().isColumnValid(columnCounter)) {
+				g.fillRect(columnCounter * tileSize, 0, tileSize, tileSize * 9);
 			}
 		}
-		
+
 		for (int quadrantYCounter = 0; quadrantYCounter < 3; quadrantYCounter++) {
 			for (int quadrantXCounter = 0; quadrantXCounter < 3; quadrantXCounter++) {
-				if(!getSudoku().isQuadrantValid(quadrantXCounter, quadrantYCounter)) {
-					g.fillRect(quadrantXCounter * tileSize*3, quadrantYCounter * tileSize * 3, tileSize * 3, tileSize*3);
+				if (!getSudoku().isQuadrantValid(quadrantXCounter, quadrantYCounter)) {
+					g.fillRect(quadrantXCounter * tileSize * 3, quadrantYCounter * tileSize * 3, tileSize * 3,
+							tileSize * 3);
 				}
 			}
 		}
@@ -100,53 +101,53 @@ public class SudokuSolverPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 
 				Point cellClicked = getCellFromClick(e.getPoint());
-
-				if (cellClicked.x >= 0 && cellClicked.x < 9 && cellClicked.y >= 0 && cellClicked.y < 9) {
-
-					if (e.isShiftDown() && getSudoku().getValues()[cellClicked.x][cellClicked.y] > 0) {
-						setSelectedCell(cellClicked);
-						sudoku.toggleCellLock(cellClicked.x, cellClicked.y);
-						repaint();
-						return;
-					}
-					if (getSudoku().isLocked(cellClicked.x, cellClicked.y)) {
-						return;
-					}
-					int newValue = getSudoku().getValues()[cellClicked.x][cellClicked.y];
-
-					switch (e.getButton()) {
-
-					case MouseEvent.BUTTON1:
-
-						if (cellClicked.equals(getSelectedCell())) {
-							newValue++;
-							if (newValue > 9) {
-								newValue = 1;
-							}
-							getSudoku().getValues()[cellClicked.x][cellClicked.y] = newValue;
-							break;
-						}
-						setSelectedCell(cellClicked);
-						break;
-
-					case MouseEvent.BUTTON2:
-						SudokuSolver.solve(getSudoku());
-						repaint();
-						break;
-					case MouseEvent.BUTTON3:
-						if (cellClicked.equals(getSelectedCell())) {
-							newValue--;
-							if (newValue < 1) {
-								newValue = 9;
-							}
-							getSudoku().getValues()[cellClicked.x][cellClicked.y] = newValue;
-							break;
-						}
-						setSelectedCell(cellClicked);
-					}
-
+				if (cellClicked.x < 0 || cellClicked.x >= 9 || cellClicked.y < 0 || cellClicked.y >= 8) {return;}
+				
+				setSelectedCell(cellClicked);
+				
+				if (e.isShiftDown() && getSudoku().getValues()[cellClicked.x][cellClicked.y] > 0) {
+					sudoku.toggleCellLock(cellClicked.x, cellClicked.y);
 					repaint();
+					return;
 				}
+				if (getSudoku().isLocked(cellClicked.x, cellClicked.y)) {
+					repaint(); 
+					return;
+				}
+				int newValue = getSudoku().getValues()[cellClicked.x][cellClicked.y];
+
+				switch (e.getButton()) {
+
+				case MouseEvent.BUTTON1:
+
+					if (cellClicked.equals(getSelectedCell())) {
+						newValue++;
+						if (newValue > 9) {
+							newValue = 1;
+						}
+						getSudoku().getValues()[cellClicked.x][cellClicked.y] = newValue;
+						break;
+					}
+
+					break;
+
+				case MouseEvent.BUTTON2:
+					SudokuSolver.solve(getSudoku());
+					repaint();
+					break;
+				case MouseEvent.BUTTON3:
+					if (cellClicked.equals(getSelectedCell())) {
+						newValue--;
+						if (newValue < 1) {
+							newValue = 9;
+						}
+						getSudoku().getValues()[cellClicked.x][cellClicked.y] = newValue;
+						break;
+					}
+					setSelectedCell(cellClicked);
+				}
+
+				repaint();
 
 			}
 
@@ -162,7 +163,9 @@ public class SudokuSolverPanel extends JPanel {
 				if (getSelectedCell() != null) {
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_DELETE:
+						getSudoku().unlockCell(getSelectedCell().x, getSelectedCell().y);
 						setSelectedCellsValue(0);
+						
 						break;
 					case KeyEvent.VK_1:
 						setSelectedCellsValue(1);
@@ -214,9 +217,11 @@ public class SudokuSolverPanel extends JPanel {
 
 							break;
 						}
-						
-					};
-				};
+
+					}
+					;
+				}
+				;
 				repaint();
 			}
 		};

@@ -1,6 +1,5 @@
 package jfk.algorithms.sudoku.model;
 
-import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import java.awt.Point;
 import java.util.*;
@@ -110,6 +109,21 @@ public class Sudoku {
 
 	@Override
 	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {
+			for (int columnCounter = 0; columnCounter < 9; columnCounter++) {
+				String value = getValues()[columnCounter][rowCounter] + "";
+				if (value.equals("0")) {
+					value = ".";
+				}
+				builder.append(value);
+			}
+			builder.append("\n");
+		}
+		return builder.toString();
+	}
+	
+	public String toFormattedString() {
 		StringBuilder builder = new StringBuilder();
 		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {
 			for (int columnCounter = 0; columnCounter < 9; columnCounter++) {
