@@ -1,31 +1,11 @@
 package jfk.algorithms.sudoku.gui;
 
-import java.awt.BorderLayout;
-import java.io.FileWriter;
 import java.awt.EventQueue;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.io.*;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 
-import javax.swing.Action;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jfk.algorithms.sudoku.model.Sudoku;
@@ -106,7 +86,6 @@ public class SudokuSolverWindow extends JFrame {
 						    	fileToSave = new File(fileToSave.toString() + ".jsudoku");
 						    }
 						    
-						    
 						    try {
 							    int[][] values = panel.getSudoku().getValues();
 							    FileWriter myWriter = new FileWriter(fileToSave.getAbsolutePath());
@@ -126,7 +105,6 @@ public class SudokuSolverWindow extends JFrame {
 						    
 						    fileToSave.getAbsolutePath();
 						}
-						
 					}
 
 					private void openSudoku() {
@@ -164,19 +142,21 @@ public class SudokuSolverWindow extends JFrame {
 								values[charCounter][lineCounter] = Integer.parseInt(valueString);
 							}
 						}
-						
-						
 						return values;
 					}
 				};
 
-				// window.getRootPane().setLayout(new BorderLayout());
 				JMenuBar menuBar = new JMenuBar();
 
 				JMenu menuItemFiles = new JMenu("Files");
 				menuItemFiles.setMnemonic(KeyEvent.VK_F);
 				menuBar.add(menuItemFiles);
 
+				JMenuItem menuItemNewSudoku = new JMenuItem("New");
+				menuItemNewSudoku.addActionListener(listener);
+				menuItemNewSudoku.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.CTRL_MASK));
+				menuItemFiles.add(menuItemNewSudoku);
+				
 				JMenuItem menuItemOpen = new JMenuItem("Open");
 				menuItemOpen.addActionListener(listener);
 				menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -192,14 +172,10 @@ public class SudokuSolverWindow extends JFrame {
 				menuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 				menuItemFiles.add(menuItemClose);
 
-				JMenu menuItemSudoku = new JMenu("Sudoku");
-				menuItemSudoku.setMnemonic(KeyEvent.VK_S);
+				JMenu menuItemSudoku = new JMenu("Edit");
+				menuItemSudoku.setMnemonic(KeyEvent.VK_E);
 				menuBar.add(menuItemSudoku);
 
-				JMenuItem menuItemNewSudoku = new JMenuItem("New");
-				menuItemNewSudoku.addActionListener(listener);
-				menuItemNewSudoku.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.CTRL_MASK));
-				menuItemSudoku.add(menuItemNewSudoku);
 
 				JMenuItem menuItemClearUnLockedItems = new JMenuItem("Clear unlocked");
 				menuItemClearUnLockedItems.addActionListener(listener);
@@ -221,11 +197,5 @@ public class SudokuSolverWindow extends JFrame {
 		};
 
 		EventQueue.invokeLater(runner);
-
 	}
-
-	public SudokuSolverWindow() {
-
-	}
-
 }
