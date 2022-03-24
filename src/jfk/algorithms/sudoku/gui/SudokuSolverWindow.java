@@ -1,6 +1,7 @@
 package jfk.algorithms.sudoku.gui;
 
 import java.awt.BorderLayout;
+import java.io.FileWriter;
 import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
@@ -9,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
+import java.io.*;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,7 +65,7 @@ public class SudokuSolverWindow extends JFrame {
 							break;
 							
 							case "Save":
-							
+								saveSudoku();
 							break;
 						case "Exit":
 							System.exit(0);
@@ -90,9 +91,47 @@ public class SudokuSolverWindow extends JFrame {
 						}
 					}
 
+					private void saveSudoku() {
+
+						JFileChooser fileChooser = new JFileChooser();
+						fileChooser.setDialogTitle("Specify where to save sudoku");
+						fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+						fileChooser.setAcceptAllFileFilterUsed(false);
+						fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSudoku files", "jsudoku")); 
+						int userSelection = fileChooser.showSaveDialog(window);
+						
+						if (userSelection == JFileChooser.APPROVE_OPTION) {
+						    File fileToSave = fileChooser.getSelectedFile();
+						    if(!fileToSave.getAbsolutePath().toLowerCase().endsWith(".jsudoku")) {
+						    	fileToSave = new File(fileToSave.toString() + ".jsudoku");
+						    }
+						    
+						    
+						    try {
+							    int[][] values = panel.getSudoku().getValues();
+							    FileWriter myWriter = new FileWriter(fileToSave.getAbsolutePath());
+							      for(int rowCounter = 0; rowCounter <9; rowCounter++) {
+							    	  for(int columnCounter = 0; columnCounter <9; columnCounter++) {
+							    		  String valueToWrite = values[columnCounter][rowCounter] + "";
+							    		  if(valueToWrite.equals("0")) {valueToWrite=".";}
+							    		  myWriter.write(valueToWrite);
+							    	  }
+							    	  myWriter.write("\n");
+							      }
+							      myWriter.close();
+							    }
+							    catch(Exception ex) {
+							    	JOptionPane.showMessageDialog(window, "Error saving to file '" + fileToSave.getAbsolutePath() + "'. Error was: " + ex.getMessage());
+							    }
+						    
+						    fileToSave.getAbsolutePath();
+						}
+						
+					}
+
 					private void openSudoku() {
 						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+						fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 						fileChooser.setAcceptAllFileFilterUsed(false);
 						fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("JSudoku files", "jsudoku"));
 						int result = fileChooser.showOpenDialog(window);
@@ -101,6 +140,7 @@ public class SudokuSolverWindow extends JFrame {
 						    try {
 						    int[][] values = fileToValues(selectedFile);
 						    panel.getSudoku().setValues(values);
+						    panel.getSudoku().lockCellsWithValues();
 						    panel.repaint();
 						    }
 						    catch(Exception ex) {
