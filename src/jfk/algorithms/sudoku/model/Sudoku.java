@@ -2,7 +2,10 @@ package jfk.algorithms.sudoku.model;
 
 
 import java.awt.Point;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Sudoku {
 
@@ -65,7 +68,7 @@ public class Sudoku {
 
 	public boolean isQuadrantValid(int quadrantX, int quadrantY) {
 
-		Set<Integer> set = new HashSet<Integer>();
+		Set<Integer> set = new HashSet<>();
 
 		for (int quadrantxCounter = 0; quadrantxCounter < 3; quadrantxCounter++) {
 			for (int quadrantyCounter = 0; quadrantyCounter < 3; quadrantyCounter++) {
@@ -82,7 +85,7 @@ public class Sudoku {
 
 	public boolean isRowValid(int row) {
 
-		Set<Integer> set = new HashSet<Integer>();
+		Set<Integer> set = new HashSet<>();
 
 		for (int columnCounter = 0; columnCounter < 9; columnCounter++) {
 			Integer valueFound = Integer.valueOf((getValues()[columnCounter][row]));
@@ -96,7 +99,7 @@ public class Sudoku {
 
 	public boolean isColumnValid(int column) {
 
-		Set<Integer> set = new HashSet<Integer>();
+		Set<Integer> set = new HashSet<>();
 
 		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {
 			Integer valueFound = Integer.valueOf((getValues()[column][rowCounter]));
@@ -122,7 +125,7 @@ public class Sudoku {
 		}
 		return builder.toString();
 	}
-	
+
 	public String toFormattedString() {
 		StringBuilder builder = new StringBuilder();
 		for (int rowCounter = 0; rowCounter < 9; rowCounter++) {

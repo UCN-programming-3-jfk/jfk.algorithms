@@ -1,11 +1,19 @@
 package jfk.algorithms.sudoku.gui;
 
 import java.awt.EventQueue;
-import java.awt.event.*;
-import java.io.*;
-import java.nio.file.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jfk.algorithms.sudoku.controller.SudokuSolver;
@@ -19,6 +27,7 @@ public class SudokuSolverWindow extends JFrame {
 
 	public static void main(String[] args) {
 		Runnable runner = new Runnable() {
+			@Override
 			public void run() {
 				window = new SudokuSolverWindow();
 				window.setTitle("JSudoku solver");

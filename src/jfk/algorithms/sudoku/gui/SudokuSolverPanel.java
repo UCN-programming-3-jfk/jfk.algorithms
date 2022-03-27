@@ -1,12 +1,19 @@
 package jfk.algorithms.sudoku.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import jfk.algorithms.sudoku.controller.SudokuSolver;
-import jfk.algorithms.sudoku.model.*;
+import javax.swing.JPanel;
+
+import jfk.algorithms.sudoku.model.Sudoku;
 
 public class SudokuSolverPanel extends JPanel {
 
@@ -101,17 +108,18 @@ public class SudokuSolverPanel extends JPanel {
 			public void mousePressed(MouseEvent e) {
 
 				Point cellClicked = getCellFromClick(e.getPoint());
-				if (cellClicked.x < 0 || cellClicked.x >= 9 || cellClicked.y < 0 || cellClicked.y >= 8) {return;}
-				
-				setSelectedCell(cellClicked);
-				
+				if (cellClicked.x < 0 || cellClicked.x >= 9 || cellClicked.y < 0 || cellClicked.y > 8) {return;}
+
+
+
 				if (e.isShiftDown() && getSudoku().getValues()[cellClicked.x][cellClicked.y] > 0) {
 					sudoku.toggleCellLock(cellClicked.x, cellClicked.y);
 					repaint();
 					return;
 				}
-				if (getSudoku().isLocked(cellClicked.x, cellClicked.y)) {
-					repaint(); 
+				if(getSelectedCell() == null || !getSelectedCell().equals(cellClicked)) {
+					setSelectedCell(cellClicked);
+					repaint();
 					return;
 				}
 				int newValue = getSudoku().getValues()[cellClicked.x][cellClicked.y];
@@ -131,10 +139,6 @@ public class SudokuSolverPanel extends JPanel {
 
 					break;
 
-				case MouseEvent.BUTTON2:
-					SudokuSolver.solve(getSudoku());
-					repaint();
-					break;
 				case MouseEvent.BUTTON3:
 					if (cellClicked.equals(getSelectedCell())) {
 						newValue--;
@@ -165,7 +169,7 @@ public class SudokuSolverPanel extends JPanel {
 					case KeyEvent.VK_DELETE:
 						getSudoku().unlockCell(getSelectedCell().x, getSelectedCell().y);
 						setSelectedCellsValue(0);
-						
+
 						break;
 					case KeyEvent.VK_1:
 						setSelectedCellsValue(1);
@@ -219,9 +223,8 @@ public class SudokuSolverPanel extends JPanel {
 						}
 
 					}
-					;
+
 				}
-				;
 				repaint();
 			}
 		};
